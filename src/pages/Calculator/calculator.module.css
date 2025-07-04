@@ -1,0 +1,12 @@
+.wrapper {
+    width: 100%;
+    height: 100%;
+}
+
+.form {
+    width: 320px;
+}
+
+.text {
+    color: rgba(255, 255, 255, 0.87) !important;
+}
