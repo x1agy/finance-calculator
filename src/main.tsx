@@ -8,7 +8,7 @@ import { Calculator } from './pages/Calculator/Calculator.tsx';
 
 const router = createBrowserRouter([
   {
-    index: true,
+    path: '/finance-calculator',
     element: (
       <AppLayout>
         <App />
@@ -16,7 +16,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: '/calculator',
+    path: '/finance-calculator/calculator',
     element: (
       <AppLayout>
         <Calculator />
