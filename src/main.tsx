@@ -16,7 +16,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: '/finance-calculator/calculator',
+    path: '/calculator',
     element: (
       <AppLayout>
         <Calculator />
