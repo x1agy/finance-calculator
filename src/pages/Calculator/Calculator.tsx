@@ -1,9 +1,11 @@
 import { Button, Flex, Form, Input, Typography } from 'antd';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router';
+import { getCalculations, setCalculations } from '../../queries/db/calculator';
 
 import styles from './calculator.module.css';
+import type { CalculationsResponse } from '../../queries/db/types';
 
 export const Calculator = () => {
   const authContext = useContext(AuthContext);
@@ -12,12 +14,24 @@ export const Calculator = () => {
   const [result, setResult] = useState<
     { all: number; standalone: number } | undefined
   >();
+  const [history, setHistory] = useState<CalculationsResponse[]>([]);
 
   if (!authContext) throw new Error('App initialization went wrong');
 
-  if (!authContext.auth.logged) {
-    navigate('/');
-  }
+  useEffect(() => {
+    if (!authContext.auth.logged) {
+      navigate('/');
+    }
+
+    const func = async () => {
+      const response = await getCalculations();
+      setHistory(response.reverse());
+    };
+
+    if (authContext.auth.logged) {
+      func();
+    }
+  }, [authContext.auth.logged, navigate]);
 
   const onSubmit = ({
     left,
@@ -26,9 +40,15 @@ export const Calculator = () => {
     left: number;
     daysCount: number;
   }) => {
-    setResult({
+    const result = {
       all: Math.round(left / daysCount),
       standalone: Math.round(left / daysCount / 2),
+    };
+    setResult(result);
+    setCalculations({
+      data: new Date(),
+      days: daysCount,
+      money: left,
     });
   };
 
@@ -49,7 +69,7 @@ export const Calculator = () => {
         </Form.Item>
         <Form.Item
           name='daysCount'
-          label={<span className={styles.text}>На сколько дней?</span>}
+          initialValue={history.length ? history[0]?.days - 1 : undefined}
           rules={[{ required: true, message: 'Заполни все поля' }]}
         >
           <Input.OTP length={2} />
@@ -70,6 +90,20 @@ export const Calculator = () => {
           </Flex>
         </>
       )}
+
+      {history.length ? (
+        <Flex vertical>
+          <Typography.Title level={3} className={styles.text}>
+            История:
+          </Typography.Title>
+          {history.map((item) => (
+            <Typography.Text className={styles.text}>
+              В общем: {item.money}. на каждого:{' '}
+              {Math.round(item.money / item.days)}
+            </Typography.Text>
+          ))}
+        </Flex>
+      ) : null}
     </Flex>
   );
 };

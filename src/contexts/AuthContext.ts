@@ -1,7 +1,7 @@
-import { createContext, type Dispatch, type SetStateAction } from 'react';
+import { createContext } from 'react';
 import type { LoggedType } from '../types/authTypes';
 
 export const AuthContext = createContext<{
   auth: LoggedType;
-  setAuth: Dispatch<SetStateAction<LoggedType>>;
+  setAuth: (value: LoggedType) => void;
 } | null>(null);
